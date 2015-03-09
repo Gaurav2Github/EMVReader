@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">EMVReader</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="card_pan_title">PAN: </string>
+    <string name="card_issuer_title">Issuer: </string>
+    <string name="expiry_month_title">Expiry Month: </string>
+    <string name="expiry_yr_title">Expiry Year: </string>
+
+    <string name="not_available">Not Available</string>
+
+    <string name="nfc_disabled">NFC is not enabled. Please go to the wireless settings to enable it.</string>
+    <string name="error">Error</string>
+    <string name="no_nfc">No NFC found on this device</string>
+
+
+
+</resources>
