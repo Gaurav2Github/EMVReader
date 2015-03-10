@@ -3,28 +3,51 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".CardViewer">
+    tools:context=".CardViewer"
+    android:background="@color/background_floating_material_dark">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="@string/welcome_message_1"
+        android:id="@+id/welcome_message_textView"
+        style="@style/Base.TextAppearance.AppCompat.Large"
+        android:background="@color/material_deep_teal_500" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="@string/card_pan_title"
-        android:id="@+id/card_pan_textView" />
+        android:id="@+id/card_pan_textView"
+        style="@style/Base.TextAppearance.AppCompat.Medium"
+        android:background="@color/primary_material_light" />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/expiry_month_title"
-        android:id="@+id/card_expiry_month_textView" />
+        android:id="@+id/card_expiry_month_textView"
+        style="@style/Base.TextAppearance.AppCompat.Medium"
+        android:background="@color/primary_material_light" />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/expiry_yr_title"
-        android:id="@+id/card_expiry_yr_textView" />
+        android:id="@+id/card_expiry_yr_textView"
+        style="@style/Base.TextAppearance.AppCompat.Medium"
+        android:background="@color/primary_material_light" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/card_issuer_title"
-        android:id="@+id/card_issuer_textView" />
+        android:id="@+id/card_issuer_textView"
+        style="@style/Base.TextAppearance.AppCompat.Medium"
+        android:background="@color/primary_material_light" />
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/imageView"
+        android:src="@drawable/emv_reader_image"
+        android:background="@color/background_floating_material_dark" />
 
 </LinearLayout>

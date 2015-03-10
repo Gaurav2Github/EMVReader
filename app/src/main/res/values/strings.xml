@@ -14,7 +14,8 @@
     <string name="nfc_disabled">NFC is not enabled. Please go to the wireless settings to enable it.</string>
     <string name="error">Error</string>
     <string name="no_nfc">No NFC found on this device</string>
-
+    <string name="welcome_message_1">Welcome to EMV Reader... \nPlease scan your payPass/payWave card with the back of this phone.</string>
+    <string name="welcome_message_2">Details of the card as below:</string>
 
 
 </resources>

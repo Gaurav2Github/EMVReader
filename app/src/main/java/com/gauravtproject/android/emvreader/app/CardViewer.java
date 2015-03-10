@@ -25,7 +25,12 @@ import java.io.IOException;
 public class CardViewer extends ActionBarActivity {
 
     private final String LOG_TAG = CardViewer.class.getSimpleName();
+
+    /**
+     * Adapter used to get NFC information from the sensor.
+     */
     private NfcAdapter mAdapter;
+
     private AlertDialog mDialog;
 
     @Override
@@ -87,6 +92,7 @@ public class CardViewer extends ActionBarActivity {
                 this.showWirelessSettingsDialog();
             }
 
+            //listen to all incoming NFC tags that support the IsoDep interface
             mAdapter.enableForegroundDispatch(this,
                     PendingIntent.getActivity(this, 0, new Intent(this, getClass())
                             .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0),
@@ -116,6 +122,7 @@ public class CardViewer extends ActionBarActivity {
         if(intent!=null && intent.getAction()!=null){
 
             //Check for Intent to start an activity when a tag is discovered.
+            //if(NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())){
             if(NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())){
 
                 //Retrieve extended data from the intent to Tag.
@@ -131,7 +138,7 @@ public class CardViewer extends ActionBarActivity {
                     return;
                 }
 
-                //Creating CardHandler object asynchronously.
+                //using CardHandler AsyncTask to extract card information in the background asynchronously.
                 new CardHandler().execute(isoDep);
 
                 Log.i(LOG_TAG, "onNewIntent(Intent intent) executed..");
@@ -213,31 +220,32 @@ public class CardViewer extends ActionBarActivity {
 
                 isoDep = params[0];
                 isoDep.connect();
-                byte[] response = isoDep.transceive(EMVReader.SELECT_PPSE);
+                byte[] response = transceive(EMVReader.SELECT_PPSE);
+                CardHandler card = new CardHandler(response);
+                card.isoDep = isoDep;
+                return card;
 
-                if(response != null){
-
-                    if ((response.length == 2) && (response[0] == (byte) 0x61))
-                    {
-                        byte[] getData = new byte[]
-                                {
-                                        0x00, (byte) 0xC0, 0x00, 0x00, response[1]
-                                };
-
-                        response = isoDep.transceive(getData);
-                        if (response != null)
-                        {
-                        if ((response.length >= 2)
-                                && (response[response.length - 2] == (byte) 0x90)
-                                && (response[response.length - 1] == (byte) 0x00))
-                            {
-                                CardHandler card = new CardHandler(response);
-                                Log.i(LOG_TAG, "doInBackground()..returns CardHandler object...");
-                                return card;
-                            }
-                        }
-                    }
-                }
+//                    if ((response.length == 2) && (response[0] == (byte) 0x61))
+//                    {
+//                        byte[] getData = new byte[]
+//                                {
+//                                        0x00, (byte) 0xC0, 0x00, 0x00, response[1]
+//                                };
+//
+//                        response = isoDep.transceive(getData);
+//                        if (response != null)
+//                        {
+//                            if ((response.length >= 2)
+//                                    && (response[response.length - 2] == (byte) 0x90)
+//                                    && (response[response.length - 1] == (byte) 0x00))
+//                            {
+//                                CardHandler card = new CardHandler(response);
+//                                Log.i(LOG_TAG, "doInBackground()..returns CardHandler object...");
+//                                return card;
+//                            }
+//                        }
+//                    }
+//                }
             }
             catch (Exception ex){
                 Log.e(LOG_TAG, "Error: " + ex.getMessage() );
@@ -267,44 +275,48 @@ public class CardViewer extends ActionBarActivity {
                     reader.doTrace=true;
                     reader.read();
 
+                    //Welcome Message updated.
+                    TextView welcomeMessageTextView = (TextView) findViewById(R.id.welcome_message_textView);
+                    welcomeMessageTextView.setText(getString(R.string.welcome_message_2));
+
                     //PAN number
                     TextView cardPanTextView = (TextView) findViewById(R.id.card_pan_textView);
                     if(reader.pan!=null){
-                        cardPanTextView.setText(getString(R.string.card_pan_title) + reader.pan);
+                        cardPanTextView.setText(getString(R.string.card_pan_title) + " " + reader.pan);
                     }
                     else
                     {
-                        cardPanTextView.setText(getString(R.string.card_pan_title) + getString(R.string.not_available));
+                        cardPanTextView.setText(getString(R.string.card_pan_title) + " " + getString(R.string.not_available));
                     }
 
                     //Expiry Month
                     TextView cardExpiryMonthTextView = (TextView) findViewById(R.id.card_expiry_month_textView);
                     if(reader.expiryMonth !=null){
-                        cardExpiryMonthTextView.setText(getString(R.string.expiry_month_title) + reader.expiryMonth);
+                        cardExpiryMonthTextView.setText(getString(R.string.expiry_month_title) + " " + reader.expiryMonth);
                     }
                     else
                     {
-                        cardExpiryMonthTextView.setText(getString(R.string.expiry_month_title) + getString(R.string.not_available));
+                        cardExpiryMonthTextView.setText(getString(R.string.expiry_month_title) + " " + getString(R.string.not_available));
                     }
 
                     //Expiry Year
                     TextView cardExpiryYearTextView = (TextView)findViewById(R.id.card_expiry_yr_textView);
                     if(reader.expiryYear  != null){
-                        cardExpiryYearTextView.setText(getString(R.string.expiry_yr_title) + reader.expiryYear);
+                        cardExpiryYearTextView.setText(getString(R.string.expiry_yr_title) + " " + reader.expiryYear);
                     }
                     else
                     {
-                        cardExpiryYearTextView.setText(getString(R.string.expiry_yr_title) + getString(R.string.not_available));
+                        cardExpiryYearTextView.setText(getString(R.string.expiry_yr_title) + " " + getString(R.string.not_available));
                     }
 
                     //Issuer
                     TextView cardIssuerTextView = (TextView) findViewById(R.id.card_issuer_textView);
                     if(reader.issuer!=null){
-                        cardIssuerTextView.setText(getString(R.string.card_issuer_title) + reader.issuer);
+                        cardIssuerTextView.setText(getString(R.string.card_issuer_title) + " " + reader.issuer);
                     }
                     else
                     {
-                        cardIssuerTextView.setText(getString(R.string.card_issuer_title) + getString(R.string.not_available));
+                        cardIssuerTextView.setText(getString(R.string.card_issuer_title) + " " + getString(R.string.not_available));
                     }
 
                 }
@@ -317,7 +329,7 @@ public class CardViewer extends ActionBarActivity {
         @Override
         public byte[] transceive(byte[] apdu) throws IOException {
             Log.i(LOG_TAG, "inside : transceive().. executed..");
-            return new byte[0];
+            return isoDep.transceive(apdu);
         }
 
         /**
